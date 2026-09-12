@@ -22,12 +22,6 @@
 
 ---
 
-## 📸 Screenshots
-
-> _Add your screenshots here_
-
----
-
 ## 🚀 Installation (from source)
 
 ### Prerequisites
@@ -167,13 +161,3 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 5. Open a Pull Request
 
 ---
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-## 🙏 Acknowledgements
-
-Built with [Claude](https://anthropic.com) by Anthropic.
