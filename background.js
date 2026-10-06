@@ -20,7 +20,8 @@ async function getConfig() {
     transcriptUrl:`${base}/api/youtube-transcript`,
     pdfUrl:       `${base}/api/pdf-text`,
     model:        model || DEFAULT_MODEL,
-    useDirect:    !!(anthropicApiKey && anthropicApiKey.startsWith("sk-ant-")),
+    // Use proxy if user explicitly set a proxy URL, otherwise call Anthropic directly
+    useDirect:    !!(anthropicApiKey && anthropicApiKey.startsWith("sk-ant-") && !proxyUrl),
   };
 }
 
@@ -179,6 +180,14 @@ chrome.runtime.onConnect.addListener((port) => {
     const cfg = await getConfig();
     const effectiveModel = model || cfg.model;
 
+    console.log("[Rashmi] Config →", {
+      useDirect: cfg.useDirect,
+      hasKey: !!cfg.apiKey,
+      keyPrefix: cfg.apiKey ? cfg.apiKey.slice(0, 14) + "…" : "none",
+      model: effectiveModel,
+      streamUrl: cfg.useDirect ? ANTHROPIC_URL : cfg.streamUrl,
+    });
+
     let response;
     try {
       if (cfg.useDirect) {
@@ -198,6 +207,7 @@ chrome.runtime.onConnect.addListener((port) => {
             "Content-Type": "application/json",
             "x-api-key": cfg.apiKey,
             "anthropic-version": "2023-06-01",
+            "anthropic-dangerous-direct-browser-access": "true",
           },
           body: JSON.stringify(body),
         });
@@ -225,7 +235,16 @@ chrome.runtime.onConnect.addListener((port) => {
     }
 
     if (!response.ok) {
-      port.postMessage({ type: "STREAM_ERROR", error: `Proxy returned ${response.status}` });
+      // Read actual error body for better diagnosis
+      const errBody = await response.json().catch(() => ({}));
+      const errMsg = errBody?.error?.message || "";
+      console.error(`[Rashmi] ${cfg.useDirect ? "Anthropic" : "Proxy"} error ${response.status}:`, errBody);
+      port.postMessage({
+        type: "STREAM_ERROR",
+        error: cfg.useDirect
+          ? `Anthropic error ${response.status}${errMsg ? ": " + errMsg : ""}`
+          : `Proxy error ${response.status}${errMsg ? ": " + errMsg : ""}`,
+      });
       return;
     }
 
@@ -325,6 +344,7 @@ async function handleClaudeRequest({ messages, systemPrompt }) {
           "Content-Type": "application/json",
           "x-api-key": cfg.apiKey,
           "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
         },
         body: JSON.stringify({
           model: cfg.model,

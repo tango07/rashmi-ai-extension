@@ -52,21 +52,52 @@
 
 ## 🔑 Setup — Adding Your API Key
 
-Rashmi AI works with a free Anthropic API key. Your key is stored **only on your device** — it's never sent anywhere except directly to Anthropic.
+Click the **Rashmi AI icon** in your toolbar → **⚙️** button → paste your key → **Save Settings**.
 
-1. **Get a free API key**
-   - Go to [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
-   - Sign up (free) and create a new API key
-   - New accounts receive free credits
+There are two ways to connect, depending on your situation:
 
-2. **Add it to the extension**
-   - Click the 🍓 icon in your toolbar to open the sidebar
-   - Click the **⚙️** button in the top-right of the sidebar
-   - Paste your key into the **Anthropic API Key** field
-   - (Optional) Click **Test** to verify it works
+---
+
+### Option A — Personal Anthropic account (simplest)
+
+Best for personal use or if you created your own Anthropic account.
+
+1. Go to [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys), sign up free, and create an API key
+2. Click the **Rashmi AI icon** in your toolbar to open the sidebar → click **⚙️** → paste your key → **Save Settings**
+3. Leave the **Proxy URL** field blank
+
+That's it — the extension calls Anthropic directly.
+
+---
+
+### Option B — Work / organisation account (e.g. EPAM)
+
+Some organisations block direct browser-to-Anthropic calls. If you see this error:
+
+> ❌ *CORS requests are not allowed for this Organization because of its settings*
+
+You need to run the companion proxy server locally. It takes 2 minutes:
+
+1. **Clone and start the proxy**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/rashmi-ai-proxy.git
+   cd rashmi-ai-proxy
+   cp .env.example .env
+   # Open .env and paste your Anthropic key as ANTHROPIC_API_KEY=sk-ant-...
+   npm install
+   npm start
+   ```
+   The proxy runs at `http://localhost:3001`.
+
+2. **Point the extension to the proxy**
+   - Click the **Rashmi AI icon** in your toolbar → click **⚙️**
+   - Expand **Advanced (optional proxy)**
+   - Set Proxy URL to `http://localhost:3001`
    - Click **Save Settings**
 
-3. **Done!** The ⚙️ button will stop being red once your key is saved.
+The proxy makes server-side API calls on your behalf, bypassing the CORS restriction.
+
+> ⚠️ The proxy must be running whenever you use the extension. Keep the terminal open.
 
 ---
 
@@ -75,7 +106,7 @@ Rashmi AI works with a free Anthropic API key. Your key is stored **only on your
 ### Chatting about a page
 
 1. Navigate to any webpage
-2. Click the 🍓 icon to open the sidebar
+2. Click the **Rashmi AI icon** in your toolbar to open the sidebar
 3. Click **⟳ Scan** to read the page
 4. Ask anything in the chat box — e.g. _"Summarise this article"_, _"What are the key takeaways?"_
 
@@ -118,7 +149,7 @@ Rashmi AI works with a free Anthropic API key. Your key is stored **only on your
 |---|---|
 | **Anthropic API Key** | Your `sk-ant-...` key from console.anthropic.com |
 | **Model** | `claude-haiku-4-5` (fast), `claude-sonnet-4-5` (recommended), `claude-opus-4-5` (most capable) |
-| **Proxy URL** | Advanced: point to a local proxy server instead of calling Anthropic directly |
+| **Proxy URL** | Set to `http://localhost:3001` if your org blocks direct browser API calls (see Option B above). Leave blank for personal accounts. |
 
 ---
 
