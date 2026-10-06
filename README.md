@@ -70,7 +70,7 @@ That's it — the extension calls Anthropic directly.
 
 ---
 
-### Option B — Work / organisation account (e.g. EPAM)
+### Option B — Work / organisation account
 
 Some organisations block direct browser-to-Anthropic calls. If you see this error:
 

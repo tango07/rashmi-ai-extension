@@ -1,7 +1,7 @@
 // background.js — Service Worker
 // Supports two modes:
 //   1. Direct: user stores their Anthropic key in popup → calls api.anthropic.com directly
-//   2. Proxy:  advanced users run epam-claude-proxy locally (or set a custom proxy URL)
+//   2. Proxy:  advanced users run rashmi-ai-proxy locally (or set a custom proxy URL)
 
 const ANTHROPIC_URL    = "https://api.anthropic.com/v1/messages";
 const DEFAULT_PROXY    = "http://localhost:3001";
@@ -229,7 +229,7 @@ chrome.runtime.onConnect.addListener((port) => {
         type: "STREAM_ERROR",
         error: cfg.useDirect
           ? "Cannot reach Anthropic. Check your internet connection."
-          : "Cannot reach proxy. Make sure it's running: npm start in epam-claude-proxy/",
+          : "Cannot reach proxy. Make sure it's running: npm start in rashmi-ai-proxy/",
       });
       return;
     }
@@ -370,7 +370,7 @@ async function handleClaudeRequest({ messages, systemPrompt }) {
     }
   } catch (err) {
     if (cfg.useDirect) throw new Error("Cannot reach Anthropic. Check your internet connection.");
-    throw new Error("Cannot reach proxy server. Run: cd epam-claude-proxy && npm start");
+    throw new Error("Cannot reach proxy server. Run: cd rashmi-ai-proxy && npm start");
   }
 
   const text = await response.text();
